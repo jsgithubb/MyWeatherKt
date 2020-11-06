@@ -15,11 +15,20 @@ import kotlin.coroutines.suspendCoroutine
 
 object MyWeatherNetwork {
 
-    //调用ServiceCreator 方法构建 placeService
+    //调用ServiceCreator 方法构建 placeService，动态代理对象，拥有PlaceService 里面的方法
     private var placeService = ServiceCreator.create(PlaceService::class.java)
 
-    //发送请求方法，带参数
+    //动态代理对象
+    private var weatherService = ServiceCreator.create(WeatherService::class.java)
+
+    //发送请求方法，带参数    挂起函数  请求城市信息
     suspend fun searchPlaces(query: String) = placeService.searchPlaces(query).await()
+
+    //发送请求方法，带参数    挂起函数  请求每日天气
+    suspend fun getDailyWeather(lng: String, lat: String) = weatherService.getDailyWeather(lng,lat).await()
+
+    //发送请求方法，带参数    挂起函数  请求实时天气
+    suspend fun getRealtimeWeather(lng: String,lat: String) = weatherService.getRealtimeWeather(lng,lat).await()
 
     /**
      *  协程相关

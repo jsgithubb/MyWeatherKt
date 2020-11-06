@@ -20,6 +20,6 @@ class MyWeatherApplication:Application() {
 
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
+        context = applicationContext        //赋值给context
     }
 }

@@ -18,9 +18,10 @@ object ServiceCreator {
         .build()
 
 
-    //定义方法，采用泛型
+    //定义方法，采用泛型,对外开放创建方式
     fun <T> create(serviceClass: Class<T>): T = retrofit.create(serviceClass)
 
+    //泛型实体化功能，都是对外开放创建的构造器，只是方式不同
     inline fun <reified T> create(): T = create(T::class.java)
 
 
