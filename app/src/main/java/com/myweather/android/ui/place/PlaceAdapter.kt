@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.myweather.android.R
 import com.myweather.android.logic.model.Place
 import com.myweather.android.ui.weather.WeatherActivity
+import kotlinx.android.synthetic.main.activity_weather.*
 
 /**
  *  城市列表RecyclerView 适配器
@@ -40,18 +41,28 @@ class PlaceAdapter(private val fragment: PlaceFragment, private val placeList: L
             val position = holder.adapterPosition   //获取第几项
             val place = placeList[position]         //获取第几项
 
-            //跳转事件  apply 函数
-            val intent = Intent(parent.context,WeatherActivity::class.java).apply {
-                //携带的数据
-                putExtra("location_lng",place.location.lng)
-                putExtra("location_lat",place.location.lat)
-                putExtra("place_name",place.name)
+            val activity = fragment.activity
+            if (activity is WeatherActivity) {
+                activity.drawerLayout.closeDrawers()
+                activity.viewModel.locationLng = place.location.lng
+                activity.viewModel.locationLat = place.location.lat
+                activity.viewModel.placeName = place.name
+                activity.refreshWeather()
+            }else{
+                //跳转事件  apply 函数
+                val intent = Intent(parent.context,WeatherActivity::class.java).apply {
+                    //携带的数据
+                    putExtra("location_lng",place.location.lng)
+                    putExtra("location_lat",place.location.lat)
+                    putExtra("place_name",place.name)
 
+                }
+                fragment.startActivity(intent)  //执行跳转
+                activity?.finish()
             }
+
             //存入数据
             fragment.viewModel.savePlace(place)
-            fragment.startActivity(intent)  //执行跳转
-            fragment.activity?.finish()
 
         }
 

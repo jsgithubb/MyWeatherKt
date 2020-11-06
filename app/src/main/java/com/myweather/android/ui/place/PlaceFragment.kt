@@ -39,8 +39,8 @@ class PlaceFragment:Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        //判断是否已经有存储的数据
-        if (viewModel.isPlaceSaved()){
+        //判断是否已经有存储的数据,或者是否在activity 页面
+        if (activity is MainActivity && viewModel.isPlaceSaved()){
             //如果数据存在，那么获取存储的数据
             val place = viewModel.getSavedPlace()
 

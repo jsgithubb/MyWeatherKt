@@ -1,14 +1,18 @@
 package com.myweather.android.ui.weather
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.myweather.android.R
@@ -58,9 +62,38 @@ class WeatherActivity : AppCompatActivity() {
                 Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+
+            // 赋值未刷新
+            swipeRefresh.isRefreshing  = false
+
         })
 
-        viewModel.refreshWeather(viewModel.locationLng,viewModel.locationLat)
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary) //设置颜色
+        refreshWeather()    //调用获取的方法
+        //设置点击刷新控件点击事件
+        swipeRefresh.setOnRefreshListener {
+            refreshWeather()    //获取数据
+        }
+
+        //更换城市按钮点击逻辑，显示滑动菜单
+        navBtn.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)    //显示菜单
+        }
+
+        //添加滑动菜单的监听，主要是为了关闭软键盘的问题。 搜索的时候软键盘会弹出
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener{
+            override fun onDrawerStateChanged(newState: Int) {}
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+
+            override fun onDrawerOpened(drawerView: View) {}
+
+            override fun onDrawerClosed(drawerView: View) {
+                val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                manager.hideSoftInputFromWindow(drawerView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+            }
+        })
+
 
     }
 
@@ -110,6 +143,17 @@ class WeatherActivity : AppCompatActivity() {
         weatherLayout.visibility = View.VISIBLE
 
 
+    }
+
+
+    /**
+     *  刷新数据的方法，刷新控件
+     */
+     fun refreshWeather(){
+        //请求数据
+        viewModel.refreshWeather(viewModel.locationLng,viewModel.locationLat)
+        //显示刷新时的 圈圈
+        swipeRefresh.isRefreshing = true
     }
 
 
